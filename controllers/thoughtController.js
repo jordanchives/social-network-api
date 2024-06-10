@@ -3,7 +3,7 @@ const { Thought } = require("../models");
 async function getThoughts(req, res) {
   try {
     const thoughts = await Thought.find({});
-    return res.json(thoughts);
+    return res.status(200).json(thoughts);
   } catch (err) {
     console.error(err);
     return res.status(400).json(err);
@@ -13,7 +13,7 @@ async function getThoughts(req, res) {
 async function getSingleThought(req, res) {
   try {
     const thought = await Thought.findOne({ _id: req.params.id });
-    return res.json(thought);
+    return res.status(200).json(thought);
   } catch (err) {
     console.error(err);
     return res.status(400).json(err);
@@ -23,7 +23,7 @@ async function getSingleThought(req, res) {
 async function createThought(req, res) {
   try {
     const thought = await Thought.create(req.body);
-    return res.json(thought);
+    return res.status(200).json(thought);
   } catch (err) {
     console.error(err);
     return res.status(400).json(err);
@@ -41,10 +41,10 @@ async function updateThought(req, res) {
     if (!thought) {
       return res
         .status(404)
-        .json({ message: "No thought found with this id!" });
+        .json({ message: "No thought found with this id" });
     }
 
-    res.json(thought);
+    res.status(200).json(thought);
   } catch (err) {
     res.status(400).json(err);
   }
@@ -60,7 +60,7 @@ async function deleteThought(req, res) {
         .json({ message: "No thought found with this id!" });
     }
 
-    res.json(thought);
+    res.status(200).json({ message: "Thought deleted" });
   } catch (err) {
     console.error(err);
     return res.status(400).json(err);

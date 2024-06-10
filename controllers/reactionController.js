@@ -1,37 +1,31 @@
-const { Reaction } = require('../models');
-
-async function getReactions(req, res) {
-    try {
-        const reactions = await Reaction.find({});
-        return res.json(reactions);
-    } catch (err) {
-        console.error(err);
-        return res.status(400).json(err);
-    }
-}
+const { Thought } = require("../models");
 
 async function createReaction(req, res) {
-    try {
-        const reaction = await Reaction.create(req.body);
-        return res.json(reaction);
-    } catch (err) {
-        console.error(err);
-        return res.status(400).json(err);
-    }
+  try {
+    const thought = await Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $addToSet: { reactions: req.body } },
+      { runValidators: true, new: true }
+    );
+
+    res.status(201).json(thought);
+  } catch (err) {
+    res.status(400).json(err);
+  }
 }
 
 async function deleteReaction(req, res) {
-    try {
-        const reaction = await Reaction.findOneAndDelete({ _id: req.params.id });
+  try {
+    const thought = await Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $pull: { reactions: { reactionId: req.params.reactionId } } },
+      { runValidators: true, new: true }
+    );
 
-        if (!reaction) {
-            return res.status(404).json({ message: 'No reaction found with this id!' });
-        }
-
-        res.json(reaction);
-    } catch (err) {
-        res.status(400).json(err);
-    }
+    res.status(202).json(thought);
+  } catch (err) {
+    res.status(400).json(err);
+  }
 }
 
-module.exports = { getReactions, createReaction, deleteReaction };
+module.exports = { createReaction, deleteReaction };
