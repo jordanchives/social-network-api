@@ -1,4 +1,4 @@
-const { Thought } = require("../models");
+const { Thought, User} = require("../models");
 
 async function createReaction(req, res) {
   try {
@@ -7,6 +7,8 @@ async function createReaction(req, res) {
       { $addToSet: { reactions: req.body } },
       { runValidators: true, new: true }
     );
+
+    
 
     res.status(201).json(thought);
   } catch (err) {
