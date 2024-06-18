@@ -15,6 +15,11 @@ async function getSingleUser(req, res) {
   try {
     // const user = await User.findOne({ _id: req.params.id });
     const user = await User.findOne({ _id: req.params.id }).populate('thoughts').populate('friends');
+
+    if (!user) {
+      return res.status(404).json({ message: "No user found with this id" });
+    };
+
     return res.status(200).json(user);
   } catch (err) {
     console.error(err);
@@ -73,8 +78,13 @@ async function deleteUser(req, res) {
 
 async function addFriend(req, res) {
   try {
+    console.log(req.params);
+    const test = await User.findOne({ _id: req.params.userId });
+    console.log(test);
+    console.log(req.params.userId);
+    console.log(req.params.friendId);
     const user = await User.findOneAndUpdate(
-      { _id: req.params.id },
+      { _id: req.params.userId },
       { $addToSet: { friends: req.params.friendId } },
       { runValidators: true, new: true }
     );
@@ -92,7 +102,7 @@ async function addFriend(req, res) {
 async function deleteFriend(req, res) {
   try {
     const user = await User.findOneAndUpdate(
-      { _id: req.params.id },
+      { _id: req.params.userId },
       { $pull: { friends: req.params.friendId } },
       { runValidators: true, new: true }
     );

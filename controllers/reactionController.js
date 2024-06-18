@@ -1,5 +1,6 @@
-const { Thought, User} = require("../models");
+const { Thought, User } = require("../models");
 
+// Create a new reaction to a thought
 async function createReaction(req, res) {
   try {
     const thought = await Thought.findOneAndUpdate(
@@ -8,14 +9,13 @@ async function createReaction(req, res) {
       { runValidators: true, new: true }
     );
 
-    
-
     res.status(201).json(thought);
   } catch (err) {
     res.status(400).json(err);
   }
 }
 
+// Delete a reaction from a thought
 async function deleteReaction(req, res) {
   try {
     const thought = await Thought.findOneAndUpdate(
