@@ -1,5 +1,6 @@
 const { User, Thought } = require("../models/");
 
+// Get all users
 async function getUsers(req, res) {
   try {
     const users = await User.find({});
@@ -10,10 +11,9 @@ async function getUsers(req, res) {
   }
 }
 
-// Get a single user by its _id and populated thought and friend data
+// Get a single user by its _id and populate thought and friend data
 async function getSingleUser(req, res) {
   try {
-    // const user = await User.findOne({ _id: req.params.id });
     const user = await User.findOne({ _id: req.params.id }).populate('thoughts').populate('friends');
 
     if (!user) {
@@ -27,6 +27,7 @@ async function getSingleUser(req, res) {
   }
 }
 
+// Create a new user
 async function createUser(req, res) {
   try {
     const user = await User.create(req.body);
@@ -37,6 +38,7 @@ async function createUser(req, res) {
   }
 }
 
+// Update a user by _id
 async function updateUser(req, res) {
   try {
     const user = await User.findOneAndUpdate(
@@ -55,6 +57,7 @@ async function updateUser(req, res) {
   }
 }
 
+// Delete a user by _id and remove associated thoughts
 async function deleteUser(req, res) {
   try {
     const user = await User.findOneAndDelete({ _id: req.params.id });
@@ -63,8 +66,10 @@ async function deleteUser(req, res) {
       return res.status(404).json({ message: "No user found with this id" });
     }
 
+    // Delete the user's associated thoughts
     await Thought.deleteMany({ _id: { $in: user.thoughts } });
 
+    // Remove the user from the friends list of other users
     await User.updateMany(
       { friends: req.params.id },
       { $pull: { friends: req.params.id } }
@@ -76,13 +81,10 @@ async function deleteUser(req, res) {
   }
 }
 
+// Add a friend to the user's friend list
 async function addFriend(req, res) {
   try {
-    console.log(req.params);
     const test = await User.findOne({ _id: req.params.userId });
-    console.log(test);
-    console.log(req.params.userId);
-    console.log(req.params.friendId);
     const user = await User.findOneAndUpdate(
       { _id: req.params.userId },
       { $addToSet: { friends: req.params.friendId } },
@@ -99,6 +101,7 @@ async function addFriend(req, res) {
   }
 }
 
+// Remove a friend from the user's friend list
 async function deleteFriend(req, res) {
   try {
     const user = await User.findOneAndUpdate(
